@@ -67,6 +67,12 @@
           setWinnerSequence(winner);
         };
 
+        const handleResetClick = () => {
+          setCells(Array.from({ length: 9 }, () => null));
+          setCurrentStep(SYMBOL_O);
+          setWinnerSequence(undefined);
+        };
+
         const getSymbolClassName = (symbol) => {
           if (symbol === SYMBOL_O) return "symbol--o";
           if (symbol === SYMBOL_X) return "symbol--x";
@@ -83,11 +89,13 @@
           ? cells[winnerSequence[0]]
           : undefined;
 
+        const isDraw = !winnerSequence && cells.every(Boolean);
+
         return (
           <div className="game">
             <div className="game-info">
-              {winnerSequence ? "Победитель: " : "Ход: "}{" "}
-              {renderSymbol(winnerSymbol ?? currentStep)}
+              {isDraw ? "Ничья" : winnerSequence ? "Победитель: " : "Ход: "}{" "}
+              {!isDraw && renderSymbol(winnerSymbol ?? currentStep)}
             </div>
             <div className="game-field">
               {cells.map((symbol, index) => {
@@ -103,6 +111,9 @@
                 );
               })}
             </div>
+            <button className="reset" onClick={handleResetClick}>
+              Сбросить
+            </button>
           </div>
         );
       }
@@ -161,6 +172,15 @@
 
       .symbol--o {
         color: green;
+      }
+
+      .reset {
+        cursor: pointer;
+        margin-top: 10px;
+        background-color: transparent;
+        border: 1px solid gray;
+        padding: 4px 12px;
+        border-radius: 4px;
       }
     </style>
   </body>
