@@ -39,6 +39,9 @@
         }
       };
 
+      /**
+       * App
+       */
       function App() {
         const [cells, setCells] = React.useState([
           null,
@@ -73,18 +76,6 @@
           setWinnerSequence(undefined);
         };
 
-        const getSymbolClassName = (symbol) => {
-          if (symbol === SYMBOL_O) return "symbol--o";
-          if (symbol === SYMBOL_X) return "symbol--x";
-          return "";
-        };
-
-        const renderSymbol = (symbol) => (
-          <span className={`symbol ${getSymbolClassName(symbol)}`}>
-            {symbol}
-          </span>
-        );
-
         const winnerSymbol = winnerSequence
           ? cells[winnerSequence[0]]
           : undefined;
@@ -93,24 +84,23 @@
 
         return (
           <div className="game">
-            <div className="game-info">
-              {isDraw ? "Ничья" : winnerSequence ? "Победитель: " : "Ход: "}{" "}
-              {!isDraw && renderSymbol(winnerSymbol ?? currentStep)}
-            </div>
+            <GameInfo
+              isDraw={isDraw}
+              currentStep={currentStep}
+              winnerSymbol={winnerSymbol}
+            />
+
             <div className="game-field">
-              {cells.map((symbol, index) => {
-                const isWinner = winnerSequence?.includes(index);
-                return (
-                  <button
-                    key={index}
-                    className={`cell ${isWinner ? "cell--win" : ""}`}
-                    onClick={() => handleCellClick(index)}
-                  >
-                    {symbol ? renderSymbol(symbol) : null}
-                  </button>
-                );
-              })}
+              {cells.map((symbol, index) => (
+                <GameCell
+                  key={index}
+                  symbol={symbol}
+                  isWinner={winnerSequence?.includes(index)}
+                  onClick={() => handleCellClick(index)}
+                />
+              ))}
             </div>
+
             <button className="reset" onClick={handleResetClick}>
               Сбросить
             </button>
@@ -118,8 +108,62 @@
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(<App />);
+      /**
+       * GameSymbol
+       */
+      function GameSymbol({ symbol }) {
+        const getSymbolClassName = (symbol) => {
+          if (symbol === SYMBOL_O) return "symbol--o";
+          if (symbol === SYMBOL_X) return "symbol--x";
+          return "";
+        };
+        return (
+          <span className={`symbol ${getSymbolClassName(symbol)}`}>
+            {symbol}
+          </span>
+        );
+      }
+
+      /**
+       * GameInfo
+       */
+      function GameInfo({ isDraw, currentStep, winnerSymbol }) {
+        const Wrapper = ({ children }) => (
+          <div className="game-info">{children}</div>
+        );
+
+        if (isDraw) return <Wrapper>Ничья</Wrapper>;
+
+        if (winnerSymbol)
+          return (
+            <Wrapper>
+              Победитель: <GameSymbol symbol={winnerSymbol} />
+            </Wrapper>
+          );
+
+        return (
+          <Wrapper>
+            Ход: <GameSymbol symbol={currentStep} />
+          </Wrapper>
+        );
+      }
+
+      /**
+       * GameCell
+       */
+      function GameCell({ symbol, isWinner, onClick }) {
+        return (
+          <button
+            className={`cell ${isWinner ? "cell--win" : ""}`}
+            onClick={onClick}
+          >
+            {symbol && <GameSymbol symbol={symbol} />}
+          </button>
+        );
+      }
+
+      // render app
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
     </script>
 
     <style>
