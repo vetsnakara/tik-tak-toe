@@ -39,10 +39,7 @@
         }
       };
 
-      /**
-       * App
-       */
-      function App() {
+      function useGameState() {
         const [cells, setCells] = React.useState([
           null,
           null,
@@ -81,6 +78,31 @@
           : undefined;
 
         const isDraw = !winnerSequence && cells.every(Boolean);
+
+        return {
+          cells,
+          currentStep,
+          winnerSequence,
+          winnerSymbol,
+          isDraw,
+          handleCellClick,
+          handleResetClick,
+        };
+      }
+
+      /**
+       * App
+       */
+      function App() {
+        const {
+          cells,
+          currentStep,
+          winnerSequence,
+          winnerSymbol,
+          isDraw,
+          handleCellClick,
+          handleResetClick,
+        } = useGameState();
 
         return (
           <div className="game">
